@@ -1,3 +1,3 @@
 
-#define CHECKTYPE(obj, type) (Py_TYPE(obj) == (type))
+#define LONGINT_BUFSIZE (sizeof(long)*CHAR_BIT+2)
 

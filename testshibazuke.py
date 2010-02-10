@@ -2,8 +2,8 @@ import unittest, re
 
 class _base(unittest.TestCase):
     def setUp(self):
-        import pyshibazuke
-        module = pyshibazuke
+        import shibazuke
+        module = shibazuke
         
         self.dumps = module.dumps
         self.loads = module.loads
@@ -27,6 +27,10 @@ class TestObject(_base):
         
         for n in _numbers:
             self._test(n)
+            self._test(n+1)
+            self._test(n+2)
+            self._test(n-1)
+            self._test(n-2)
         
     def testLong(self):
         for n in BORDER_LENS:

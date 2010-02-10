@@ -13,7 +13,7 @@ LONG = 0x10
 # |0010|1111|.... 32-bit little endian int ....  ::: len <= 2147483647
 
 FLOAT = 0x20
-# |0010|    |.... 64-bit IEEE floating point number...|
+# |0010|    |.... 64-bit IEEE floating point     ...|
 
 STR = 0x30
 # |0011|len |                                    ::: len <= 12
@@ -341,6 +341,7 @@ class Loader:
     def _load(self, s, pos):
         flag = ord(s[pos]) & 0xf0
         f = self.TYPEMAP[flag]
+        print f
         pos, val = f(self, s, pos)
         return pos, val
         
@@ -392,3 +393,4 @@ def loads(s):
 ##100./138
 ##
 ##repr(2.2)
+
