@@ -164,10 +164,10 @@ class Serializer:
         subitems = [self._build(item) for item in t]
         s = self._build_num(TUPLE, len(t)) + "".join(subitems)
 
-        pos = len(self._objs)
-        self._objs.append(s) 
+#        pos = len(self._objs)
+#        self._objs.append(s) 
         self._buildings.remove(objid)
-        return self._build_ref(pos)
+        return s #self._build_ref(pos)
 
     def _handle_list(self, l):
         objid = id(l)
@@ -178,10 +178,10 @@ class Serializer:
         subitems = [self._build(item) for item in l]
         s = self._build_num(LIST, len(l)) + "".join(subitems)
 
-        pos = len(self._objs)
-        self._objs.append(s) 
+#        pos = len(self._objs)
+#        self._objs.append(s) 
         self._buildings.remove(objid)
-        return self._build_ref(pos)
+        return s #self._build_ref(pos)
 
     def _handle_dict(self, d):
         objid = id(d)
@@ -196,10 +196,10 @@ class Serializer:
             
         s = self._build_num(DICT, len(d)) + "".join(subitems)
 
-        pos = len(self._objs)
-        self._objs.append(s) 
+#        pos = len(self._objs)
+#        self._objs.append(s) 
         self._buildings.remove(objid)
-        return self._build_ref(pos)
+        return s#self._build_ref(pos)
 
     def _handle_none(self, v):
         return chr(SPECIALS+0)
@@ -341,7 +341,6 @@ class Loader:
     def _load(self, s, pos):
         flag = ord(s[pos]) & 0xf0
         f = self.TYPEMAP[flag]
-        print f
         pos, val = f(self, s, pos)
         return pos, val
         

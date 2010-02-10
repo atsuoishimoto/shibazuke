@@ -229,13 +229,9 @@ cdef class Serializer:
         for item in t:
             subitems.append(self._build(item))
 
-        s = self._build_num(TUPLE, len(t)) + "".join(subitems)
-
-        pos = len(self._objs)
-        self._objs.append(s) 
         del self._buildings[objid]
-
-        return self._build_ref(pos)
+        s = self._build_num(TUPLE, len(t)) + "".join(subitems)
+        return s
 
     cdef _handle_list(self, list t):
         cdef list subitems
@@ -249,13 +245,9 @@ cdef class Serializer:
         for item in t:
             subitems.append(self._build(item))
 
-        s = self._build_num(LIST, len(t)) + "".join(subitems)
-
-        pos = len(self._objs)
-        self._objs.append(s) 
         del self._buildings[objid]
-
-        return self._build_ref(pos)
+        s = self._build_num(LIST, len(t)) + "".join(subitems)
+        return s
 
     cdef _handle_dict(self, dict d):
         cdef list subitems
@@ -270,13 +262,9 @@ cdef class Serializer:
             subitems.append(self._build(k))
             subitems.append(self._build(v))
             
-        s = self._build_num(DICT, len(d)) + "".join(subitems)
-
-        pos = len(self._objs)
-        self._objs.append(s) 
         del self._buildings[objid]
-
-        return self._build_ref(pos)
+        s = self._build_num(DICT, len(d)) + "".join(subitems)
+        return s
 
     def _handle_none(self, v):
         return chr(SPECIALS+0)

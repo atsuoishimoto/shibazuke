@@ -2,8 +2,8 @@ import unittest, re
 
 class _base(unittest.TestCase):
     def setUp(self):
-        import shibazuke
-        module = shibazuke
+        import pyshibazuke
+        module = pyshibazuke
         
         self.dumps = module.dumps
         self.loads = module.loads
