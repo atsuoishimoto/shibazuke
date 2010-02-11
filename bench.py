@@ -1,6 +1,8 @@
 #!/usr/bin/env python
 # coding: utf-8
 
+import gc
+gc.disable()
 import shibazuke
 from cPickle import dumps, loads
 import simplejson as json

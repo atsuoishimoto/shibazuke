@@ -84,6 +84,7 @@ DEF MAX_OBJECTDEPTH = 100
 DEF MAX_OBJECTLENGTH = 2147483647
 
 cdef class Serializer:
+    cdef dict _numcache
     cdef dict _nummap
     cdef dict _strmap
     cdef dict _ustrmap
@@ -91,6 +92,7 @@ cdef class Serializer:
     cdef dict _buildings
 
     def __init__(self):
+        self._numcache = {}
         self._nummap = {}
         self._strmap = {}
         self._ustrmap = {}
@@ -143,17 +145,22 @@ cdef class Serializer:
 
     cdef object _handle_int(self, object i):
         cdef long v
-        v = i
         
+        if i in self._numcache:
+            return self._numcache[i]
+        
+        v = i
         if -2147483647 <= v <= 2147483647:
-            return self._build_num(INT, v)
+            ret = self._build_num(INT, v)
         else:
-            return self._handle_long(i)
-    
+            ret = self._handle_long(i)
+        
+        self._numcache[i] = ret
+        return ret
+        
     cdef object _handle_long(self, object l):
-        n = self._nummap.get(l)
-        if n is not None:
-            return self._build_ref(n)
+        if l in self._nummap:
+            return self._build_ref(self._nummap[l])
             
         ret = self._build_long(LONG, l)
         if len(ret) <= 4:
@@ -176,9 +183,8 @@ cdef class Serializer:
         return PyString_FromStringAndSize(buf, 9)
         
     cdef object _handle_string(self, object s):
-        n = self._strmap.get(s)
-        if n is not None:
-            return self._build_ref(n)
+        if s in self._strmap:
+            return self._build_ref(self._strmap[s])
 
         e = self._build_str(STR, s)
         if len(e) <= 4:
@@ -191,9 +197,8 @@ cdef class Serializer:
         return self._build_ref(pos)
 
     cdef _handle_unicode(self, s):
-        n = self._ustrmap.get(s)
-        if n is not None:
-            return self._build_ref(n)
+        if s in self._ustrmap:
+            return self._build_ref(self._ustrmap[s])
 
         e = s.encode("utf-8")
         e = self._build_str(USTR, e)
@@ -251,7 +256,7 @@ cdef class Serializer:
         if objid in self._buildings:
             raise ValueError('Circular refecence(%s)' % d)
 
-        if len(t) >= MAX_OBJECTLENGTH:
+        if len(d) >= MAX_OBJECTLENGTH:
             raise ValueError("Max object length exceeded")
 
         self._buildings[objid] = None
