@@ -2,8 +2,8 @@ import unittest, re
 
 class _base(unittest.TestCase):
     def setUp(self):
-        import pyshibazuke
-        module = pyshibazuke
+        import shibazuke
+        module = shibazuke
         
         self.dumps = module.dumps
         self.loads = module.loads
@@ -34,9 +34,11 @@ class TestObject(_base):
         
     def testLong(self):
         for n in BORDER_LENS:
-            self._test(int("1"+"0"*(n-2)))
-            self._test(int("1"+"0"*(n-1)))
-            self._test(int("1"+"0"*(n)))
+            self._test(long("1"+"0"*(n-2)))
+            self._test(long("1"+"0"*(n-1)))
+            self._test(long("1"+"0"*(n)))
+            self._test(long("1"+"0"*(n+1)))
+            self._test(long("1"+"0"*(n+2)))
 
     def testBool(self):
         self._test(True)
@@ -172,8 +174,6 @@ class TestNest(_base):
         all3 = (list1, (list2, (dict1, (dict2, (tuple1, (tuple2, (tuple3,
                 (tuple4, (tuple5, (tuple6))))))))))
 
-#        self._test(list2)
-#        self._test(dict1)
         self._test(tuple1)
         self._test(tuple2)
         self._test(tuple3)
@@ -227,8 +227,7 @@ class TestNest(_base):
                 l = m
                 n+=1
                 self._test(top)
-        self.failUnlessRaises(RuntimeError, _run)
-        
+        self.failUnlessRaises(ValueError, _run)
 
 
 

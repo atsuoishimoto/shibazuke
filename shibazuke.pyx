@@ -93,6 +93,7 @@ cdef enum:
     
     
 DEF SZHEADER = "sz\0\0\1"
+DEF MAX_OBJECTDEPTH = 100
 
 cdef class Serializer:
     cdef dict _nummap
@@ -276,6 +277,9 @@ cdef class Serializer:
             return chr(SPECIALS+2)
             
     cdef object _build(self, obj):
+        if len() >= MAX_OBJECTDEPTH:
+            raise ValueError("Max object depth exceeded")
+            
         if PyBool_Check(obj):
             return self._handle_bool(obj)
         elif PyString_CheckExact(obj):
