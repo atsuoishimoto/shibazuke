@@ -94,6 +94,7 @@ cdef enum:
     
 DEF SZHEADER = "sz\0\0\1"
 DEF MAX_OBJECTDEPTH = 100
+DEF MAX_OBJECTLENGTH = 2147483647
 
 cdef class Serializer:
     cdef dict _nummap
@@ -225,6 +226,9 @@ cdef class Serializer:
         if objid in self._buildings:
             raise ValueError('Circular refecence(%s)' % `t`)
 
+        if len(t) >= MAX_OBJECTLENGTH:
+            raise ValueError("Max object length exceeded")
+            
         self._buildings[objid] = None
         subitems = []
         for item in t:
@@ -241,6 +245,9 @@ cdef class Serializer:
         if objid in self._buildings:
             raise ValueError('Circular refecence(%s)' % `t`)
 
+        if len(t) >= MAX_OBJECTLENGTH:
+            raise ValueError("Max object length exceeded")
+
         self._buildings[objid] = None
         subitems = []
         for item in t:
@@ -256,6 +263,9 @@ cdef class Serializer:
         objid = id(d)
         if objid in self._buildings:
             raise ValueError('Circular refecence(%s)' % d)
+
+        if len(t) >= MAX_OBJECTLENGTH:
+            raise ValueError("Max object length exceeded")
 
         self._buildings[objid] = None
         subitems = []
@@ -277,7 +287,7 @@ cdef class Serializer:
             return chr(SPECIALS+2)
             
     cdef object _build(self, obj):
-        if len() >= MAX_OBJECTDEPTH:
+        if len(self._buildings) >= MAX_OBJECTDEPTH:
             raise ValueError("Max object depth exceeded")
             
         if PyBool_Check(obj):
@@ -411,7 +421,7 @@ cdef class Loader:
         cdef list items
 
         nitems = self._load_num()
-        if nitems < 0:
+        if nitems < 0 or nitems >= MAX_OBJECTLENGTH:
             raise ValueError("Invalid data")
         
         items = []
@@ -427,7 +437,7 @@ cdef class Loader:
         cdef list items
         
         nitems = self._load_num()
-        if nitems < 0:
+        if nitems < 0 or nitems >= MAX_OBJECTLENGTH:
             raise ValueError("Invalid data")
         
         items = []
@@ -441,7 +451,7 @@ cdef class Loader:
         cdef dict d
         
         nitems = self._load_num()
-        if nitems < 0:
+        if nitems < 0 or nitems >= MAX_OBJECTLENGTH:
             raise ValueError("Invalid data")
         
         d = {}

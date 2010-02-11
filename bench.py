@@ -2,7 +2,6 @@
 # coding: utf-8
 
 import shibazuke
-from msgpack import packs, unpacks
 from cPickle import dumps, loads
 import simplejson as json
 from time import time
