@@ -1,16 +1,3 @@
-import struct, sys
-
-
-	
-
-cdef extern from "util.h":
-    enum:
-        LONGINT_BUFSIZE
-    
-cdef extern from "limits.h":
-    enum:
-        CHAR_BIT
-    
 cdef extern from "Python.h":
     object PyString_FromStringAndSize(char *, Py_ssize_t charlen)
     int PyString_AsStringAndSize(object, char **, Py_ssize_t *) except -1
