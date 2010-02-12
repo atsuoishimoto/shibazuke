@@ -1,0 +1,23 @@
+shibazuke --- Fast object serializer for Python
+===============================================
+
+shibazuke provides simple and fast object serialization. 
+Usually shibazuke generates smaller data than picke or JSON,
+and faster on both serialization and de-serialization. 
+
+shibazuke was intended to be safely used for 
+interprocess-communications, so hopefully de-serializing
+maliciously crafted data doesn't harm.
+
+
+Installing
+==========
+
+run "python setup.py install".
+
+Copyright
+=========
+
+shibazuke is made available under the MIT license. SEE LICENSE
+file for detail.
+

@@ -1,11 +1,20 @@
-from distutils.core import setup
-from Pyrex.Distutils import build_ext, Extension
+from setuptools import setup, Extension
 
 setup(name='Shibazuke',
-      version='0.0.1',
-      ext_modules=[
-          Extension('shibazuke', ['shibazuke.pyx'])],
-      cmdclass = {'build_ext': build_ext},
-)
+      version='0.1.0',
+      description="Fast object serializer for Python", 
+      classifiers = [
+          "Intended Audience :: Developers",
+          "License :: OSI Approved :: MIT License",
+          "Programming Language :: Python",
+          "Topic :: Software Development :: Libraries :: Python Modules"],
+      author="Atsuo Ishimoto",
+      author_email="ishimoto@gembook.org",
+      url="https://launchpad.net/shibazuke",
+      license="MIT License",
+      platforms=['any'],
 
+      ext_modules=[
+          Extension('shibazuke', ['shibazuke.pyx'])]
+)
 
