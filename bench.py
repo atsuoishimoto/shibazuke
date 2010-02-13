@@ -6,15 +6,15 @@ gc.disable()
 import shibazuke
 from cPickle import dumps, loads
 import simplejson as json
-from time import time
+from time import clock
 
 BENCH_NUM = 10
 
 def bench(func, num=BENCH_NUM):
-    start = time()
+    start = clock()
     for i in xrange(BENCH_NUM):
             func()
-    end = time()
+    end = clock()
     print "%-12s  %4.3f[ms]" % (func.__name__, (end-start)*1000/BENCH_NUM)
 
 def setup_int():
