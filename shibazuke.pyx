@@ -22,6 +22,7 @@ cdef extern from "Python.h":
     object PyFloat_FromDouble(double v) 
     object PyInt_FromString(char *, char**, int)
 
+    Py_ssize_t PyList_GET_SIZE(object list) 
     object PyList_GET_ITEM(object list, Py_ssize_t i) 
 
 cdef enum:
@@ -463,6 +464,8 @@ cdef class Loader:
         cdef long n
 
         n = self._load_num()
+        if n >= PyList_GET_SIZE(self._objs):
+            raise IndexError("list index out of range")
         val = PyList_GET_ITEM(self._objs, n)
         Py_XINCREF(val)
         return val
