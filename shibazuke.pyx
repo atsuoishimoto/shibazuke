@@ -1,8 +1,7 @@
 cdef extern from "Python.h":
-    object PyString_FromStringAndSize(char *, Py_ssize_t charlen)
-    int PyString_AsStringAndSize(object, char **, Py_ssize_t *) except -1
-    object PyUnicode_FromStringAndSize(char *u, Py_ssize_t size)
-    
+
+    void Py_XINCREF(object)
+
     int PyBool_Check(object)
     int PyInt_CheckExact(object)
     int PyLong_CheckExact(object)
@@ -13,13 +12,18 @@ cdef extern from "Python.h":
     int PyList_CheckExact(object)
     int PyDict_CheckExact(object)
     int _PyFloat_Pack8(double x, unsigned char *p, int le) except -1
+
+    object PyString_FromStringAndSize(char *, Py_ssize_t charlen)
+    int PyString_AsStringAndSize(object, char **, Py_ssize_t *) except -1
+    object PyUnicode_FromStringAndSize(char *u, Py_ssize_t size)
+    
     double _PyFloat_Unpack8(unsigned char *p, int le)
     double PyFloat_AS_DOUBLE(object) 
     object PyFloat_FromDouble(double v) 
     object PyInt_FromString(char *, char**, int)
+
     object PyList_GET_ITEM(object list, Py_ssize_t i) 
-    void Py_XINCREF(object)
-    
+
 cdef enum:
     INT = 0x00
     # |0000|num |                                    ::: 0 <= num <= 12
@@ -269,10 +273,10 @@ cdef class Serializer:
         s = self._build_num(DICT, len(d)) + "".join(subitems)
         return s
 
-    def _handle_none(self, v):
+    cdef object _handle_none(self, v):
         return chr(SPECIALS+0)
         
-    def _handle_bool(self, v):
+    cdef object _handle_bool(self, v):
         if v:
             return chr(SPECIALS+1)
         else:
