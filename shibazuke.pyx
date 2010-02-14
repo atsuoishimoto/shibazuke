@@ -438,10 +438,10 @@ cdef class Loader:
         if nitems < 0 or nitems >= MAX_OBJECTLENGTH:
             raise ValueError("Invalid data")
         
-        items = []
+        items = [None] * nitems
         for 0 <= i < nitems:
             val = self._load()
-            items.append(val)
+            items[i] = val
         
         ret = tuple(items)
         return ret
@@ -454,10 +454,10 @@ cdef class Loader:
         if nitems < 0 or nitems >= MAX_OBJECTLENGTH:
             raise ValueError("Invalid data")
         
-        items = []
+        items = [None] * nitems
         for 0 <= i < nitems:
             val = self._load()
-            items.append(val)
+            items[i] = val
         return items
 
     cdef _handle_dict(self):
