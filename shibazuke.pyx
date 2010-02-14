@@ -1,5 +1,8 @@
 cdef extern from "Python.h":
-
+    ctypedef struct PyObject:
+        pass
+    
+    
     void Py_XINCREF(object)
 
     int PyBool_Check(object)
@@ -28,6 +31,9 @@ cdef extern from "Python.h":
     Py_ssize_t PyTuple_GET_SIZE(object list) 
     object PyTuple_GET_ITEM(object list, Py_ssize_t i) 
 
+    int PyDict_Contains(object p, object key) except -1
+    PyObject* PyDict_GetItem(object p, object key) 
+    
 cdef enum:
     INT = 0x00
     # |0000|num |                                    ::: 0 <= num <= 12
@@ -110,7 +116,7 @@ cdef class Serializer:
     cdef object _build_num(self, int flag, long num):
         cdef char c[6]
         cdef Py_ssize_t tlen
-        
+            
         if 0 <= num <= 12:
             c[0] = <char>(flag | num)
             tlen = 1
@@ -153,8 +159,8 @@ cdef class Serializer:
 
     cdef object _handle_int(self, object i):
         cdef long v
-        
-        if i in self._numcache:
+
+        if PyDict_Contains(self._numcache, i):
             return self._numcache[i]
         
         v = i
@@ -167,7 +173,7 @@ cdef class Serializer:
         return ret
         
     cdef object _handle_long(self, object l):
-        if l in self._nummap:
+        if PyDict_Contains(self._nummap, l):
             return self._build_ref(self._nummap[l])
             
         ret = self._build_long(LONG, l)
@@ -191,7 +197,7 @@ cdef class Serializer:
         return PyString_FromStringAndSize(buf, 9)
         
     cdef object _handle_string(self, object s):
-        if s in self._strmap:
+        if PyDict_Contains(self._strmap, s):
             return self._build_ref(self._strmap[s])
 
         e = self._build_str(STR, s)
@@ -205,7 +211,7 @@ cdef class Serializer:
         return self._build_ref(pos)
 
     cdef _handle_unicode(self, s):
-        if s in self._ustrmap:
+        if PyDict_Contains(self._ustrmap, s):
             return self._build_ref(self._ustrmap[s])
 
         e = s.encode("utf-8")
@@ -224,20 +230,19 @@ cdef class Serializer:
         cdef Py_ssize_t i, nitems
         
         objid = id(t)
-        if objid in self._buildings:
+        if PyDict_Contains(self._buildings, objid):
             raise ValueError('Circular refecence(%s)' % `t`)
 
         if len(t) >= MAX_OBJECTLENGTH:
             raise ValueError("Max object length exceeded")
             
         self._buildings[objid] = None
-        subitems = []
-        
         nitems = PyTuple_GET_SIZE(t)
+        subitems = [None]*nitems
         for 0 <= i < nitems:
             item = PyTuple_GET_ITEM(t, i)
             Py_XINCREF(item)
-            subitems.append(self._build(item))
+            subitems[i] = self._build(item)
 
         del self._buildings[objid]
         s = self._build_num(TUPLE, len(t)) + "".join(subitems)
@@ -248,19 +253,19 @@ cdef class Serializer:
         cdef Py_ssize_t i, nitems
 
         objid = id(t)
-        if objid in self._buildings:
+        if PyDict_Contains(self._buildings, objid):
             raise ValueError('Circular refecence(%s)' % `t`)
 
         if len(t) >= MAX_OBJECTLENGTH:
             raise ValueError("Max object length exceeded")
 
         self._buildings[objid] = None
-        subitems = []
         nitems = PyList_GET_SIZE(t)
+        subitems = [None]*nitems
         for 0 <= i < nitems:
             item = PyList_GET_ITEM(t, i)
             Py_XINCREF(item)
-            subitems.append(self._build(item))
+            subitems[i] = self._build(item)
 
         del self._buildings[objid]
         s = self._build_num(LIST, len(t)) + "".join(subitems)
