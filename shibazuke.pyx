@@ -379,7 +379,7 @@ cdef class Loader:
         return val
         
     cdef _handle_long(self):
-        cdef long slen
+        cdef Py_ssize_t slen
         cdef char *end
         
         slen = self._load_num()
@@ -394,7 +394,7 @@ cdef class Loader:
         return val
         
     cdef _handle_str(self):
-        cdef long slen
+        cdef Py_ssize_t slen
         
         slen = self._load_num()
         if slen < 0:
@@ -408,7 +408,7 @@ cdef class Loader:
         return ret
         
     cdef object _handle_ustr(self):
-        cdef long slen
+        cdef Py_ssize_t slen
         
         slen = self._load_num()
         if slen < 0:
@@ -431,7 +431,7 @@ cdef class Loader:
         return PyFloat_FromDouble(d)
     
     cdef _handle_tuple(self):
-        cdef long nitems, i
+        cdef Py_ssize_t nitems, i
         cdef list items
 
         nitems = self._load_num()
@@ -447,7 +447,7 @@ cdef class Loader:
         return ret
 
     cdef _handle_list(self):
-        cdef long nitems, i
+        cdef Py_ssize_t nitems, i
         cdef list items
         
         nitems = self._load_num()
@@ -461,7 +461,7 @@ cdef class Loader:
         return items
 
     cdef _handle_dict(self):
-        cdef long nitems
+        cdef Py_ssize_t nitems
         cdef dict d
         
         nitems = self._load_num()
@@ -478,7 +478,7 @@ cdef class Loader:
         return d
 
     cdef _handle_refs(self):
-        cdef long n
+        cdef Py_ssize_t n
 
         n = self._load_num()
         if n >= PyList_GET_SIZE(self._objs):
