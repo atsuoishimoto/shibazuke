@@ -28,6 +28,8 @@ cdef extern from "Python.h":
     Py_ssize_t PyList_GET_SIZE(object list) 
     object PyList_GET_ITEM(object list, Py_ssize_t i) 
 
+    object PyTuple_New(Py_ssize_t l)
+    void PyTuple_SET_ITEM(object, Py_ssize_t pos, object) 
     Py_ssize_t PyTuple_GET_SIZE(object list) 
     object PyTuple_GET_ITEM(object list, Py_ssize_t i) 
 
@@ -432,19 +434,18 @@ cdef class Loader:
     
     cdef _handle_tuple(self):
         cdef Py_ssize_t nitems, i
-        cdef list items
 
         nitems = self._load_num()
         if nitems < 0 or nitems >= MAX_OBJECTLENGTH:
             raise ValueError("Invalid data")
         
-        items = [None] * nitems
+        tp = PyTuple_New(nitems)
         for 0 <= i < nitems:
             val = self._load()
-            items[i] = val
+            PyTuple_SET_ITEM(tp, i, val)
+            Py_XINCREF(val)
         
-        ret = tuple(items)
-        return ret
+        return tp
 
     cdef _handle_list(self):
         cdef Py_ssize_t nitems, i
