@@ -25,6 +25,9 @@ cdef extern from "Python.h":
     Py_ssize_t PyList_GET_SIZE(object list) 
     object PyList_GET_ITEM(object list, Py_ssize_t i) 
 
+    Py_ssize_t PyTuple_GET_SIZE(object list) 
+    object PyTuple_GET_ITEM(object list, Py_ssize_t i) 
+
 cdef enum:
     INT = 0x00
     # |0000|num |                                    ::: 0 <= num <= 12
@@ -216,9 +219,10 @@ cdef class Serializer:
 
         return self._build_ref(pos)
 
-    cdef object _handle_tuple(self, t):
+    cdef object _handle_tuple(self, object t):
         cdef list subitems
-
+        cdef Py_ssize_t i, nitems
+        
         objid = id(t)
         if objid in self._buildings:
             raise ValueError('Circular refecence(%s)' % `t`)
@@ -228,7 +232,11 @@ cdef class Serializer:
             
         self._buildings[objid] = None
         subitems = []
-        for item in t:
+        
+        nitems = PyTuple_GET_SIZE(t)
+        for 0 <= i < nitems:
+            item = PyTuple_GET_ITEM(t, i)
+            Py_XINCREF(item)
             subitems.append(self._build(item))
 
         del self._buildings[objid]
@@ -237,6 +245,7 @@ cdef class Serializer:
 
     cdef _handle_list(self, list t):
         cdef list subitems
+        cdef Py_ssize_t i, nitems
 
         objid = id(t)
         if objid in self._buildings:
@@ -247,7 +256,10 @@ cdef class Serializer:
 
         self._buildings[objid] = None
         subitems = []
-        for item in t:
+        nitems = PyList_GET_SIZE(t)
+        for 0 <= i < nitems:
+            item = PyList_GET_ITEM(t, i)
+            Py_XINCREF(item)
             subitems.append(self._build(item))
 
         del self._buildings[objid]
