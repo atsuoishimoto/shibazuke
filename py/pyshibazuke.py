@@ -60,7 +60,7 @@ SZHEADER = "sz\0\0\1"
 
 class Serializer:
     def __init__(self):
-        self._nummap = {}
+        self._numcache = {}
         self._strmap = {}
         self._ustrmap = {}
         self._objs = []
@@ -86,29 +86,6 @@ class Serializer:
         return self._build_num(flag, slen) + s
         
 
-    def _build_ref(self, n):
-        s = self._build_num(REFS, n)
-        if not s:
-            raise ValueError("Too many object")
-        return s
-        
-    def _handle_num(self, num):
-        n = self._nummap.get(num)
-        if n is not None:
-            return self._build_ref(n)
-
-        s = self._build_num(INT, num)
-        if s and len(s) <= 3:
-            # num is small. Don't use object table.
-            return s
-
-        if not s:
-            s = self._build_long(LONG, num)
-        pos = len(self._objs)
-        self._objs.append(s)
-        self._nummap[num] = pos
-        return self._build_ref(pos)
-
     def _build_str(self, flag, s):
         slen = len(s)
         if slen >= 2147483647:
@@ -116,18 +93,32 @@ class Serializer:
 
         return self._build_num(flag, slen) + s
 
+    def _build_ref(self, n):
+        s = self._build_num(REFS, n)
+        if not s:
+            raise ValueError("Too many object")
+        return s
+        
+    def _handle_num(self, num):
+        if num in self._numcache:
+            return self._numcache[num]
 
-    hit = [0]
-    short = [0]
+        s = self._build_num(INT, num)
+        if not s:
+            s = self._build_long(LONG, num)
+        self._numcache[num] = s
+        return s
+
+    def _handle_float(self, f):
+        return chr(FLOAT) + struct.pack('>d', f)
+        
     def _handle_string(self, s):
         n = self._strmap.get(s)
         if n is not None:
-            self.hit[0] +=1
             return self._build_ref(n)
 
         e = self._build_str(STR, s)
         if len(e) <= 4:
-            self.short[0] +=1
             return e
 
         pos = len(self._objs)
@@ -138,13 +129,11 @@ class Serializer:
     def _handle_unicode(self, s):
         n = self._ustrmap.get(s)
         if n is not None:
-            self.hit[0] +=1
             return self._build_ref(n)
 
         e = s.encode("utf-8")
         e = self._build_str(USTR, e)
         if len(e) <= 4:
-            self.short[0] += 1
             return e
 
         pos = len(self._objs)
@@ -152,9 +141,6 @@ class Serializer:
         self._ustrmap[s] = pos
         return self._build_ref(pos)
 
-    def _handle_float(self, f):
-        return chr(FLOAT) + struct.pack('>d', f)
-        
     def _handle_tuple(self, t):
         objid = id(t)
         if objid in self._buildings:
