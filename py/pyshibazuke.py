@@ -164,10 +164,8 @@ class Serializer:
         subitems = [self._build(item) for item in t]
         s = self._build_num(TUPLE, len(t)) + "".join(subitems)
 
-#        pos = len(self._objs)
-#        self._objs.append(s) 
         self._buildings.remove(objid)
-        return s #self._build_ref(pos)
+        return s
 
     def _handle_list(self, l):
         objid = id(l)
@@ -178,10 +176,8 @@ class Serializer:
         subitems = [self._build(item) for item in l]
         s = self._build_num(LIST, len(l)) + "".join(subitems)
 
-#        pos = len(self._objs)
-#        self._objs.append(s) 
         self._buildings.remove(objid)
-        return s #self._build_ref(pos)
+        return s
 
     def _handle_dict(self, d):
         objid = id(d)
@@ -196,10 +192,8 @@ class Serializer:
             
         s = self._build_num(DICT, len(d)) + "".join(subitems)
 
-#        pos = len(self._objs)
-#        self._objs.append(s) 
         self._buildings.remove(objid)
-        return s#self._build_ref(pos)
+        return s
 
     def _handle_none(self, v):
         return chr(SPECIALS+0)
@@ -228,8 +222,6 @@ class Serializer:
         s = self._build(obj)
         self._objs.append(s)
         return SZHEADER + "".join(self._objs)
-
-
 
 class Loader:
     def __init__(self):
@@ -360,36 +352,4 @@ def dumps(s):
 
 def loads(s):
     return Loader().loads(s)
-
-#hex(224)
-#
-#oo = [1,2,255, 2.2, -1, -100, -10000, -10000000, 
-#    ('a', 'b', 'cdddddddddddddddddd'), 
-#    3, 5555555,
-#    {1:2},{3:{4:5}},{("1","2","3"):['abcdefghmflkasmdflkasmflkmflksdlkam']}
-#]
-#
-##oo = {1:1}
-#for i in range(100):
-#    ss = Serializer().dumps(oo)
-#    Loader().loads(ss)
-#print l == oo, len(ss), l
-#
-#
-##oo = ("a",2,3,4,5,6,7,"abcdefghijklmnopdddddddddddddddasdadasdasdqrst",9,0,1,2,3,0xfffff)
-###oo = ("a","a","a","a","a","a","a","a","a","a",)
-##
-##print Serializer().dumps(oo)
-##
-#import pickle
-#for i in range(100):
-#    s = pickle.dumps(oo, -1)
-#    pickle.loads(s)
-#print len(s)
-##pickle.loads(s)
-##
-##97./129
-##100./138
-##
-##repr(2.2)
 
