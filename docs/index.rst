@@ -11,7 +11,7 @@
 
 :mod:`shibazuke` provides simple and fast object serialization. 
 Usually :mod:`shibazuke` generates smaller data than :mod:`picke` or JSON,
-and faster on both serialization and de-serialization. :mod:`shibazuke` was
+and faster on both serialization and de-serialization. :mod:`shibazuke` is
 intended to be safely used for interprocess-communications, so hopefully 
 de-serializing maliciously crafted data doesn't harm.
 
@@ -24,7 +24,7 @@ Usage
 
 .. function:: loads(string)
 
-    Return the shibazuke representation of the object as a string.
+    Read a shibazuke object hierarchy from a string
 
 
 Exapmle
