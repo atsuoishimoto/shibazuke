@@ -80,3 +80,14 @@ Limitations
     >>> serialized = shibazuke.loads(result)
     >>> serialized[0] is serialized[1]
     False
+
+
+History
+-----------
+
+.. 0.1.1 (2010/3/22)
+  Performace improvements.
+
+
+.. 0.1.0 (2010/2/12)
+  Initial release.
