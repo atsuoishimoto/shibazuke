@@ -4,7 +4,7 @@ ez_setup.use_setuptools()
 from setuptools import setup, Extension
 
 setup(name='Shibazuke',
-      version='0.1.0',
+      version='0.1.1',
       description="Fast object serializer for Python", 
       classifiers = [
           "Intended Audience :: Developers",
