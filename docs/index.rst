@@ -71,7 +71,7 @@ Limitations
     ValueError: Circular refecence([[[...]]])
 
 * Objectes can occur multiple times in the object tree to be serialized, 
-  but they are de-serialized as differect objects.
+  but they are de-serialized as different objects.
 
     >>> import shibazuke
     >>> list1 = []
